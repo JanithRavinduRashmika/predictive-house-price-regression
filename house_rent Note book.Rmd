@@ -1,0 +1,123 @@
+---
+title: "ST 3008"
+output: html_notebook
+---
+
+## Libraries
+
+```{r}
+
+```
+
+## Loading Data Set
+
+```{r}
+dataSet = read.csv("House_Rent_Dataset.csv")
+head(dataSet)
+```
+
+## Checking Shape Of The Data Set
+
+```{r}
+dim(dataSet)
+```
+
+## Information about Data Set
+
+```{r}
+summary(dataSet)
+```
+
+
+## Checking For Missing Values
+
+```{r}
+sum(is.null(dataSet))
+```
+## Checking For Duplicated Values
+
+```{r}
+sum(duplicated(dataSet))
+```
+
+
+## Encoding
+
+```{r}
+
+# Encoding floor variable in to Floor Level and Total Floors
+
+splitStr = function(x){
+  strsplit(x,"out of")[[1]]
+}
+
+splitList = lapply(dataSet$Floor,splitStr)
+
+splitVec = unlist(splitList)
+
+
+
+floorLevel = splitVec[((1:4746)*2)-1]
+totalFloos = splitVec[(1:4746)*2]
+
+dataSet$`Floor Level` = floorLevel
+dataSet$`Total Floors` = totalFloos
+
+dataSet = dataSet[c(1:5,13,14,6:12)]
+
+
+# Change "Ground " value to "0" in Floor Level
+dataSet$`Floor Level`[dataSet$`Floor Level` == "Ground "] = "0"
+
+
+# Encoding Posted.On variable in to Month Posted,Day Posted, Day of Week Posted, Quarter Posted
+
+
+dataSet$`Month Posted` = as.integer(format(as.Date(dataSet$Posted.On) , "%m"))
+  
+dataSet$`Day Posted` = as.integer(format(as.Date(dataSet$Posted.On) , "%d"))
+
+dataSet$`Day of Week Posted` = as.POSIXlt(as.Date(dataSet$Posted.On))$wday #sun = 0
+
+dataSet$`Quarter Posted` = as.integer(substr(quarters(as.Date(dataSet$Posted.On)), 2, 2))
+
+dataSet = dataSet[c(1,15:18,2:14)]
+
+```
+
+## Order According to Posted.On
+
+```{r}
+dataSet = dataSet[order(Posted.On),]
+```
+
+## Change variable Type
+
+```{r}
+
+dataSet$Posted.On = as.Date(dataSet$Posted.On)
+dataSet$`Floor Level` = as.integer(dataSet$`Floor Level`)
+dataSet$`Total Floors` = as.integer(dataSet$`Floor Level`)
+dataSet$Area.Type = as.factor(dataSet$Area.Type)
+dataSet$City = as.factor(dataSet$City)
+dataSet$Furnishing.Status = as.factor(dataSet$Furnishing.Status)
+dataSet$Tenant.Preferred = as.factor(dataSet$Tenant.Preferred)
+dataSet$Point.of.Contact = as.factor(dataSet$Point.of.Contact)
+
+```
+
+## Data Set After pre processing
+
+```{r}
+dataSet
+```
+
+
+
+
+
+
+
+
+
+
